@@ -43,21 +43,21 @@ export default class TopView extends JetView{
 							weekNumber: true,
 							date: new Date(Date.now()),
 							view: "calendar",
+							multiselect:true,
+							events: webix.Date.isHoliday,
 							blockDates:function(date){
-								// console.log(date);
-								if(new Date(Date.now()).getFullYear()==date.getFullYear() && new Date(Date.now()).getMonth()==date.getMonth() && new Date(Date.now()).getDate()>date.getDate()){
+								let yesterday = new Date(Date.now()).setDate(new Date(Date.now()).getDate() - 1);
+								console.log(date);
+								let isBusy = currentItem.isBusy.find(function (item) {
+									return new Date(item).getFullYear()==date.getFullYear() && new Date(item).getMonth()==date.getMonth() && new Date(item).getDate()==date.getDate();
+								});
+								if(yesterday>date || isBusy){
 									return true;
 								}
-								// let isBusy = "";
-								// currentItem.isBusy.forEach(function (item) {
-								// 	if(new Date(item).getFullYear()==date.getFullYear() && new Date(item).getMonth()==date.getMonth() && new Date(item).getDate()==date.getDate()){
-								//
-								// 	}
-								// })
-							},
+		}
 							// minDate:'2018-04-05',
 							// maxDate:new Date(2018, 4, 20),
-							events: webix.Date.isHoliday
+
 						},
 						{
 							cols: [
