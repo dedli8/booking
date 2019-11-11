@@ -25,50 +25,86 @@ export default class TopView extends JetView{
 	}
 	config(){
 		function calendar(event, column, target, self){
-			console.log(self.getItem(column.row));
 			let currentItem = self.getItem(column.row);
+			let tomorrow = new Date(Date.now());
+			tomorrow.setDate(new Date(Date.now()).getDate()+1);
+			console.log(tomorrow);
+			console.log(new Date(Date.now()));
 			let calendarView = webix.ui({
 				view: "window",
 				id: "calendarModal",
-				head: "Выберите дату",
-				width: 400,
+				head: "Выберите дату начала и окончания брони",
+				width: 600,
 				// height: 400,
 				// close: true,
 				modal: true,
 				position: "center",
 				body: {
-					rows: [
-						{
-							weekHeader: true,
-							weekNumber: true,
-							date: new Date(Date.now()),
-							view: "calendar",
-							multiselect:true,
-							events: webix.Date.isHoliday,
-							blockDates:function(date){
-								let yesterday = new Date(Date.now()).setDate(new Date(Date.now()).getDate() - 1);
-								console.log(date);
-								let isBusy = currentItem.isBusy.find(function (item) {
-									return new Date(item).getFullYear()==date.getFullYear() && new Date(item).getMonth()==date.getMonth() && new Date(item).getDate()==date.getDate();
-								});
-								if(yesterday>date || isBusy){
-									return true;
-								}
-		}
-							// minDate:'2018-04-05',
-							// maxDate:new Date(2018, 4, 20),
+					cols: [
+                        {rows: [
+                                {
+                                    weekHeader: true,
+                                    weekNumber: true,
+                                    // date: new Date(Date.now()),
+                                    view: "calendar",
+                                    id: "calendar_date_start",
+                                    events: webix.Date.isHoliday,
+                                    blockDates:function(date){
+                                        let yesterday = new Date(Date.now()).setDate(new Date(Date.now()).getDate() - 1);
+                                        let isBusy = currentItem.isBusy.find(function (item) {
+                                            return new Date(item).getFullYear()==date.getFullYear() && new Date(item).getMonth()==date.getMonth() && new Date(item).getDate()==date.getDate();
+                                        });
+                                        if(yesterday>date || isBusy){
+                                            return true;
+                                        }
+                                    }
+                                    // minDate:'2018-04-05',
+                                    // maxDate:new Date(2018, 4, 20),
 
-						},
-						{
-							cols: [
-								{view: "button", css: "webix_primary", label: "Выбрать"},
-								{view: "button", css: "webix_danger", label: "Отменить", click: ()=>{
-									$$("calendarModal").close();
-									}
+                                },
+                                {view: "button", css: "webix_primary", label: "Выбрать", click: ()=> {
+                                        console.log($$("calendar_date_start").getValue());
+                                        let dateStart = $$("calendar_date_start").getValue();
+                                        console.log($$("calendar_date_end").getValue());
+                                        let dateEnd = $$("calendar_date_end").getValue();
+                                        $$("calendarModal").close();
+                                        addBookModal.show();
+                                        $$("date_start").setValue(dateStart);
+                                        $$("date_end").setValue(dateEnd);
+                                        $$("car").setValue(currentItem.car);
+                                        $$("number").setValue(currentItem.number);
 
-									}
-							]
-						}
+
+                                    }},
+                            ]},
+                        {rows: [
+                                {
+                                    weekHeader: true,
+                                    weekNumber: true,
+                                    // date: new Date(2019,12, 11),
+                                    view: "calendar",
+                                    id: "calendar_date_end",
+                                    events: webix.Date.isHoliday,
+                                    blockDates:function(date){
+                                        let yesterday = new Date(Date.now()).setDate(new Date(Date.now()).getDate() - 1);
+                                        let isBusy = currentItem.isBusy.find(function (item) {
+                                            return new Date(item).getFullYear()==date.getFullYear() && new Date(item).getMonth()==date.getMonth() && new Date(item).getDate()==date.getDate();
+                                        });
+                                        if(yesterday>date || isBusy){
+                                            return true;
+                                        }
+                                    }
+                                    // minDate:'2018-04-05',
+                                    // maxDate:new Date(2018, 4, 20),
+
+                                },
+                                {view: "button", css: "webix_danger", label: "Отменить", click: ()=>{
+                                        $$("calendarModal").close();
+                                    }
+
+                                }
+                            ]},
+
 					]
 				}
 
@@ -96,9 +132,9 @@ export default class TopView extends JetView{
 							{id: "name", view: "text", label:"Имя", labelWidth: 120, name: "name"},
 							{id: "phone", view: "text", label:"Телефон", labelWidth: 120, name: "phone"},
 							{id: "email", view: "text", label:"Email", labelWidth: 120, name: "email"},
-							{id: "date_start", view: "text", label:"Дата подачи", labelWidth: 120, name: "date_start"},
+							{id: "date_start", view: "datepicker", label:"Дата подачи", labelWidth: 120, name: "date_start", value: new Date(Date.now()) },
 							{id: "place_start", view: "text", label:"Место подачи", labelWidth: 120, name: "place_start"},
-							{id: "date_end", view: "text", label:"Дата забора", labelWidth: 120, name: "date_end"},
+							{id: "date_end", view: "datepicker", label:"Дата забора", labelWidth: 120, name: "date_end", value: new Date(Date.now())},
 							{id: "place_end", view: "text", label:"Место забора", labelWidth: 120, name: "place_end"},
 							{id: "price_rent", view: "text", label:"Цена (аренда)", labelWidth: 120, name: "price_rent"},
 							{id: "price_ins", view: "text", label:"Цена (страховка)", labelWidth: 120, name: "price_ins"},
